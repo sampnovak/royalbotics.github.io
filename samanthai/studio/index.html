@@ -1,176 +1,160 @@
-<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Oakbit — SamanthAI Studio | Code</title>    <link rel="preconnect" href="https://fonts.googleapis.com">  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <!-- Marked JS for Markdown Parsing -->  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Oakbit — SamanthAI Studio | Stable Diffusion Engine</title>    <link rel="preconnect" href="https://fonts.googleapis.com">  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>  <!-- Marked JS for Markdown Parsing -->  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>    :root {      --bg-gradient: radial-gradient(circle at 10% 20%, #f4f7f6 0%, #e2ece9 40%),                     radial-gradient(circle at 90% 80%, #ebf5ee 0%, #d8ffb1 50%);            --glass-surface-1: rgba(255, 255, 255, 0.75);      --glass-surface-2: rgba(255, 255, 255, 0.55);      --glass-border: rgba(255, 255, 255, 0.8);      --glass-border-highlight: rgba(216, 255, 177, 0.6);            --oakbit-emerald: #10b981;      --oakbit-cyan: #0284c7;
       --text-main: #1e293b;      --text-muted: rgba(30, 41, 59, 0.6);            --radius-xl: 32px;      --radius-lg: 20px;
       --backdrop-blur: blur(50px) saturate(200%);      --liquid-shadow: 0 20px 40px -15px rgba(216, 255, 177, 0.4),                       0 10px 20px -10px rgba(0, 0, 0, 0.08),                       inset 0 1px 2px 0 rgba(255, 255, 255, 0.9);    }
     * {      box-sizing: border-box;      margin: 0;      padding: 0;      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;      -webkit-font-smoothing: antialiased;    }
     body {      min-height: 100vh;      background: #f4f7f6;      background-image: var(--bg-gradient);      background-attachment: fixed;      color: var(--text-main);      display: flex;      justify-content: center;      align-items: center;      overflow: hidden;      padding: 10px;      transition: background 0.5s ease;    }
     .ambient-orb {      position: fixed;      border-radius: 50%;      filter: blur(80px);      z-index: 0;      pointer-events: none;      opacity: 0.65;      animation: floatOrb 18s ease-in-out infinite alternate;    }
-    .orb-1 {      width: 400px; height: 400px;      background: radial-gradient(circle, rgba(216, 255, 177, 0.8) 0%, rgba(16, 185, 129, 0.3) 100%);      top: -80px; left: -80px;    }
-    .orb-2 {      width: 450px; height: 450px;      background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(216, 255, 177, 0.6) 100%);      bottom: -100px; right: -80px;      animation-delay: -9s;    }
+    .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(216, 255, 177, 0.8) 0%, rgba(16, 185, 129, 0.3) 100%); top: -80px; left: -80px; }
+    .orb-2 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(216, 255, 177, 0.6) 100%); bottom: -100px; right: -80px; animation-delay: -9s; }
     @keyframes floatOrb {      0% { transform: translate(0, 0) scale(1); }      50% { transform: translate(40px, 30px) scale(1.08); }      100% { transform: translate(-30px, 50px) scale(0.95); }    }
     
     .app-viewport {      position: relative;      z-index: 10;      width: 100%;      max-width: 1200px;      height: 92vh;      max-height: 920px;      background: var(--glass-surface-2);      backdrop-filter: var(--backdrop-blur);      -webkit-backdrop-filter: var(--backdrop-blur);      border: 1px solid var(--glass-border);      border-radius: var(--radius-xl);      box-shadow: var(--liquid-shadow);      display: flex;      overflow: hidden;      transition: all 0.5s ease;    }
 
-    /* Sidebar for Chat History */
+    /* Sidebar */
     .sidebar {      width: 280px;      background: rgba(255, 255, 255, 0.4);      border-right: 1px solid var(--glass-border);      display: flex;      flex-direction: column;      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);      z-index: 20;    }
     .sidebar-header {      padding: 20px;      display: flex;      align-items: center;      justify-content: space-between;      border-bottom: 1px solid var(--glass-border);    }
     .new-chat-btn {      width: 100%;      background: linear-gradient(135deg, #10b981 0%, #059669 100%);      border: 1px solid rgba(255, 255, 255, 0.4);      color: #fff;      padding: 10px 16px;      border-radius: 12px;      font-weight: 600;      font-size: 0.9rem;      cursor: pointer;      display: flex;      align-items: center;      justify-content: center;      gap: 8px;      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);      transition: all 0.2s ease;    }
-    .new-chat-btn:hover {      transform: translateY(-1px);      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);    }
-    .chat-history-list {      flex: 1;      overflow-y: auto;      padding: 15px;      display: flex;      flex-direction: column;      gap: 8px;    }
+    .new-chat-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35); }
+    .chat-history-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
     .history-item {      padding: 12px 14px;      border-radius: 12px;      background: rgba(255, 255, 255, 0.5);      border: 1px solid transparent;      cursor: pointer;      font-size: 0.88rem;      color: var(--text-main);      display: flex;      align-items: center;      justify-content: space-between;      transition: all 0.2s ease;      white-space: nowrap;      overflow: hidden;      text-overflow: ellipsis;    }
-    .history-item:hover {      background: rgba(255, 255, 255, 0.9);      border-color: rgba(216, 255, 177, 0.8);    }
-    .history-item.active {      background: #ffffff;      border-color: #10b981;      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);      font-weight: 600;    }
-    .history-item .delete-chat {      opacity: 0;      transition: opacity 0.2s;      color: #ef4444;      padding: 4px;    }
-    .history-item:hover .delete-chat {      opacity: 1;    }
+    .history-item:hover { background: rgba(255, 255, 255, 0.9); border-color: rgba(216, 255, 177, 0.8); }
+    .history-item.active { background: #ffffff; border-color: #10b981; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15); font-weight: 600; }
+    .history-item .delete-chat { opacity: 0; transition: opacity 0.2s; color: #ef4444; padding: 4px; }
+    .history-item:hover .delete-chat { opacity: 1; }
 
-    /* Main Chat Area */
-    .main-content {      flex: 1;      display: flex;      flex-direction: column;      overflow: hidden;      background: rgba(255, 255, 255, 0.25);      position: relative;    }
+    /* Main Content */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(255, 255, 255, 0.25); position: relative; }
+    .header { padding: 18px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); z-index: 15; }
+    .brand-title { display: flex; align-items: center; gap: 14px; }
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.2rem; color: var(--text-main); cursor: pointer; padding: 4px; }
+    .brand-logo { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #d8ffb1, rgba(255, 255, 255, 0.8)); border: 1px solid var(--glass-border-highlight); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(216, 255, 177, 0.5); }
+    .brand-logo i { font-size: 20px; color: #059669; }
+    .brand-info .company-tag { font-size: 0.68rem; color: #059669; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+    .brand-info h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .feature-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #059669; font-family: 'JetBrains Mono', monospace; }
 
-    .header {      padding: 18px 30px;      display: flex;      align-items: center;      justify-content: space-between;      border-bottom: 1px solid var(--glass-border);      background: rgba(255, 255, 255, 0.4);      backdrop-filter: blur(20px);      z-index: 15;    }
-    .brand-title {      display: flex;      align-items: center;      gap: 14px;    }
-    .menu-toggle {      display: none;      background: none;      border: none;      font-size: 1.2rem;      color: var(--text-main);      cursor: pointer;      padding: 4px;    }
-    .brand-logo {      width: 42px;      height: 42px;      border-radius: 12px;      background: linear-gradient(135deg, #d8ffb1, rgba(255, 255, 255, 0.8));      border: 1px solid var(--glass-border-highlight);      display: flex;      align-items: center;      justify-content: center;      box-shadow: 0 4px 15px rgba(216, 255, 177, 0.5);    }
-    .brand-logo i {      font-size: 20px;      color: #059669;      filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));    }
-    .brand-info .company-tag {      font-size: 0.68rem;      color: #059669;      font-weight: 700;      letter-spacing: 0.12em;      text-transform: uppercase;      display: flex;      align-items: center;      gap: 6px;    }
-    .brand-info h1 {      font-size: 1.15rem;      font-weight: 700;      letter-spacing: -0.02em;      color: var(--text-main);      display: flex;      align-items: center;      gap: 8px;    }
-    .feature-badge {      font-size: 0.75rem;      padding: 2px 8px;      border-radius: 6px;      background: rgba(16, 185, 129, 0.15);      border: 1px solid rgba(16, 185, 129, 0.3);      color: #059669;      font-family: 'JetBrains Mono', monospace;    }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .dynamic-tab-btn { background: rgba(216, 255, 177, 0.8); border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: #047857; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .dynamic-tab-btn:hover { background: #d8ffb1; transform: translateY(-1px); }
 
-    .header-actions {      display: flex;      align-items: center;      gap: 10px;    }
-    .dynamic-tab-btn {      background: rgba(216, 255, 177, 0.8);      border: 1px solid rgba(16, 185, 129, 0.4);      padding: 6px 14px;      border-radius: 20px;      font-size: 0.75rem;      font-weight: 700;      color: #047857;      cursor: pointer;      display: flex;      align-items: center;      gap: 6px;      transition: all 0.2s;    }
-    .dynamic-tab-btn:hover {      background: #d8ffb1;      transform: translateY(-1px);    }
+    .status-badge { background: rgba(255, 255, 255, 0.6); border: 1px solid var(--glass-border); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+    .status-badge.online { background: rgba(216, 255, 177, 0.7); border-color: rgba(16, 185, 129, 0.3); color: #047857; }
+    .status-badge.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444; }
+    .status-badge .pulse { width: 7px; height: 7px; background: #64748b; border-radius: 50%; transition: all 0.3s ease; }
+    .status-badge.online .pulse { background: #10b981; box-shadow: 0 0 10px #10b981; animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); } }
 
-    .status-badge {      background: rgba(255, 255, 255, 0.6);      border: 1px solid var(--glass-border);      padding: 6px 14px;      border-radius: 20px;      font-size: 0.75rem;      font-weight: 600;      color: var(--text-muted);      display: flex;      align-items: center;      gap: 8px;    }
-    .status-badge.online {      background: rgba(216, 255, 177, 0.7);      border-color: rgba(16, 185, 129, 0.3);      color: #047857;    }
-    .status-badge.error {      background: rgba(239, 68, 68, 0.1);      border-color: rgba(239, 68, 68, 0.3);      color: #ef4444;    }
-    .status-badge .pulse {      width: 7px; height: 7px;      background: #64748b;      border-radius: 50%;      transition: all 0.3s ease;    }
-    .status-badge.online .pulse {      background: #10b981;      box-shadow: 0 0 10px #10b981;      animation: pulseGlow 2s infinite;    }
-    @keyframes pulseGlow {      0%, 100% { opacity: 0.4; transform: scale(1); }      50% { opacity: 1; transform: scale(1.3); }    }
-
-    /* Workspace Body Container */
-    .workspace-body {      flex: 1;      display: flex;      flex-direction: column;      overflow: hidden;      position: relative;    }
-
-    .chat-container {      flex: 1;      padding: 30px;      overflow-y: auto;      display: flex;      flex-direction: column;      gap: 20px;      scroll-behavior: smooth;    }
+    .workspace-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .chat-container { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
     
-    /* Dynamic Theme Wrapper (Redesigns the window UI itself when active) */
-    .dynamic-window-theme {      width: 100%;      height: 100%;      display: flex;      flex-direction: column;      position: absolute;      top: 0; left: 0; z-index: 100;      background: inherit;
-    }
+    /* Dynamic Tab Container */
+    .dynamic-tab-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(240, 245, 242, 0.95); backdrop-filter: blur(30px); z-index: 110; display: none; flex-direction: column; overflow: hidden; }
+    .dynamic-tab-header { padding: 12px 20px; background: rgba(255, 255, 255, 0.8); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; }
+    .dynamic-tab-title { font-weight: 700; color: #059669; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .close-dynamic-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .dynamic-tab-content { flex: 1; overflow: auto; padding: 20px; }
 
-    /* Dynamic Tab Overlay (For full immersive apps like chess/games) */
-    .dynamic-tab-container {      position: absolute;      top: 0; left: 0; width: 100%; height: 100%;      background: rgba(240, 245, 242, 0.95);      backdrop-filter: blur(30px);      z-index: 110;      display: none;      flex-direction: column;      overflow: hidden;    }
-    .dynamic-tab-header {      padding: 12px 20px;      background: rgba(255, 255, 255, 0.8);      border-bottom: 1px solid var(--glass-border);      display: flex;      align-items: center;      justify-content: space-between;    }
-    .dynamic-tab-title {      font-weight: 700;      color: #059669;      font-size: 0.9rem;      display: flex;      align-items: center;      gap: 8px;    }
-    .close-dynamic-btn {      background: rgba(239, 68, 68, 0.1);      border: 1px solid rgba(239, 68, 68, 0.3);      color: #ef4444;      padding: 4px 12px;      border-radius: 8px;      font-size: 0.75rem;      font-weight: 600;      cursor: pointer;    }
-    .dynamic-tab-content {      flex: 1;      overflow: auto;      padding: 20px;    }
+    .message { max-width: 85%; padding: 16px 22px; border-radius: var(--radius-lg); font-size: 0.95rem; line-height: 1.6; position: relative; animation: messagePop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; backdrop-filter: blur(20px); word-wrap: break-word; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); }
+    @keyframes messagePop { 0% { opacity: 0; transform: translateY(12px) scale(0.97); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    .message.user { align-self: flex-end; background: linear-gradient(135deg, rgba(216, 255, 177, 0.9), rgba(16, 185, 129, 0.2)); border: 1px solid rgba(16, 185, 129, 0.3); border-bottom-right-radius: 6px; color: #0f172a; white-space: pre-wrap; }
+    .message.assistant { align-self: flex-start; background: rgba(255, 255, 255, 0.7); border: 1px solid var(--glass-border); border-bottom-left-radius: 6px; color: #1e293b; }
+    .message .sender-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; opacity: 0.6; }
+    
+    .message-img-preview { max-width: 240px; border-radius: 10px; margin-bottom: 10px; display: block; border: 1px solid rgba(0,0,0,0.1); }
+    .message-body img { max-width: 100%; border-radius: 12px; margin-top: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 1px solid var(--glass-border); display: block; }
 
-    .message {      max-width: 85%;      padding: 16px 22px;      border-radius: var(--radius-lg);      font-size: 0.95rem;      line-height: 1.6;      position: relative;      animation: messagePop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;      backdrop-filter: blur(20px);      word-wrap: break-word;      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);    }
-    @keyframes messagePop {      0% { opacity: 0; transform: translateY(12px) scale(0.97); }      100% { opacity: 1; transform: translateY(0) scale(1); }    }
-    .message.user {      align-self: flex-end;      background: linear-gradient(135deg, rgba(216, 255, 177, 0.9), rgba(16, 185, 129, 0.2));      border: 1px solid rgba(16, 185, 129, 0.3);      border-bottom-right-radius: 6px;      color: #0f172a;      white-space: pre-wrap;    }
-    .message.assistant {      align-self: flex-start;      background: rgba(255, 255, 255, 0.7);      border: 1px solid var(--glass-border);      border-bottom-left-radius: 6px;      color: #1e293b;    }
-    .message .sender-tag {      font-size: 0.7rem;      font-weight: 700;      text-transform: uppercase;      letter-spacing: 0.08em;      margin-bottom: 8px;      opacity: 0.6;    }
-
-    /* Markdown Element Styles */
     .message-body p { margin-bottom: 10px; }
     .message-body p:last-child { margin-bottom: 0; }
-    .message-body h1, .message-body h2, .message-body h3 { margin: 14px 0 8px 0; color: inherit; font-weight: 700; }
-    .message-body ul, .message-body ol { margin: 8px 0 12px 20px; }
-    .message-body li { margin-bottom: 4px; }
     .message-body code { font-family: 'JetBrains Mono', monospace; background: rgba(0, 0, 0, 0.06); padding: 2px 6px; border-radius: 6px; font-size: 0.88em; color: #059669; border: 1px solid rgba(0, 0, 0, 0.08); }
     .message-body pre { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 14px 16px; margin: 12px 0; overflow-x: auto; }
     .message-body pre code { background: none; padding: 0; border: none; color: #d8ffb1; font-size: 0.88em; }
 
-    .typing-indicator {      display: flex;      align-items: center;      gap: 6px;      padding: 18px 24px;      background: rgba(255, 255, 255, 0.7);      border: 1px solid var(--glass-border);      border-radius: var(--radius-lg);      align-self: flex-start;      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);    }
-    .typing-dot {      width: 8px; height: 8px;      border-radius: 50%;      background: var(--text-muted);      animation: typing 1.4s infinite ease-in-out both;    }
+    .typing-indicator { display: flex; align-items: center; gap: 6px; padding: 18px 24px; background: rgba(255, 255, 255, 0.7); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); align-self: flex-start; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); }
+    .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); animation: typing 1.4s infinite ease-in-out both; }
     .typing-dot:nth-child(1) { animation-delay: -0.32s; }
     .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes typing {      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }      40% { transform: scale(1.1); opacity: 1; background: #10b981; }    }
+    @keyframes typing { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.1); opacity: 1; background: #10b981; } }
 
-    .input-dock-container {      padding: 20px 30px 25px 30px;      background: rgba(255, 255, 255, 0.4);      backdrop-filter: blur(25px);      border-top: 1px solid var(--glass-border);    }
-    .input-dock {      display: flex;      align-items: center;      background: rgba(255, 255, 255, 0.8);      border: 1px solid var(--glass-border);      border-radius: var(--radius-lg);      padding: 8px 12px 8px 20px;      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);    }
-    .chat-textarea {      flex: 1;      background: transparent;      border: none;      outline: none;      color: var(--text-main);      font-size: 0.95rem;      resize: none;      max-height: 120px;      height: 24px;      line-height: 24px;      font-family: 'JetBrains Mono', monospace;    }
-    .send-btn {      width: 42px; height: 42px;      border-radius: 50%;      border: 1px solid rgba(255, 255, 255, 0.5);      background: linear-gradient(135deg, #10b981 0%, #0284c7 100%);      color: white;      display: flex;      align-items: center;      justify-content: center;      cursor: pointer;      margin-left: 10px;      flex-shrink: 0;      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);      transition: transform 0.2s;    }
+    /* Input Dock & Image Attachments */
+    .input-dock-container { padding: 20px 30px 25px 30px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border); }
+    .attachment-preview-bar { display: none; align-items: center; gap: 10px; margin-bottom: 10px; padding: 8px 12px; background: rgba(255,255,255,0.7); border-radius: 12px; border: 1px solid var(--glass-border); width: fit-content; }
+    .attachment-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+    .remove-attachment { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.9rem; }
+
+    .input-dock { display: flex; align-items: center; background: rgba(255, 255, 255, 0.8); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 8px 12px 8px 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+    .upload-btn { background: none; border: none; color: #64748b; font-size: 1.1rem; cursor: pointer; margin-right: 12px; transition: color 0.2s; }
+    .upload-btn:hover { color: #10b981; }
+    .chat-textarea { flex: 1; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.95rem; resize: none; max-height: 120px; height: 24px; line-height: 24px; font-family: 'JetBrains Mono', monospace; }
+    .send-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.5); background: linear-gradient(135deg, #10b981 0%, #0284c7 100%); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 10px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: transform 0.2s; }
     .send-btn:hover { transform: scale(1.05); }
 
-    .empty-state {      margin: auto;      text-align: center;      max-width: 440px;      opacity: 0.85;    }
-    .empty-icon {      font-size: 48px;      margin-bottom: 16px;      background: linear-gradient(135deg, #059669, #0284c7);      -webkit-background-clip: text;      -webkit-text-fill-color: transparent;    }
+    .empty-state { margin: auto; text-align: center; max-width: 440px; opacity: 0.85; }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; background: linear-gradient(135deg, #059669, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* Responsive Design for Mobile & Desktop */
-    @media (max-width: 768px) {      body { padding: 0; }      .app-viewport {        height: 100vh;        max-height: 100vh;        border-radius: 0;        border: none;      }      .sidebar {        position: absolute;        left: -280px;        top: 0;        bottom: 0;        height: 100%;        z-index: 100;      }      .sidebar.open {        transform: translateX(280px);        box-shadow: 20px 0 50px rgba(0,0,0,0.1);      }      .menu-toggle { display: block; }      .header { padding: 12px 16px; }      .chat-container { padding: 16px; }      .input-dock-container { padding: 12px 16px 16px 16px; }    }  </style></head><body>
+    @media (max-width: 768px) {      body { padding: 0; }      .app-viewport { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
+      .sidebar { position: absolute; left: -280px; top: 0; bottom: 0; height: 100%; z-index: 100; }
+      .sidebar.open { transform: translateX(280px); box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+      .menu-toggle { display: block; }
+      .header { padding: 12px 16px; }
+      .chat-container { padding: 16px; }
+      .input-dock-container { padding: 12px 16px 16px 16px; }
+    }  </style></head><body>
   <div class="ambient-orb orb-1"></div>  <div class="ambient-orb orb-2"></div>
 
   <div class="app-viewport" id="appViewport">
-    <!-- Sidebar for Chat History -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <button class="new-chat-btn" id="newChatBtn">
-          <i class="fa-solid fa-plus"></i> New Chat
-        </button>
+        <button class="new-chat-btn" id="newChatBtn"><i class="fa-solid fa-plus"></i> New Session</button>
       </div>
       <div class="chat-history-list" id="chatHistoryList"></div>
     </aside>
 
     <div class="main-content">
-      <header class="header" id="appHeader">
+      <header class="header">
         <div class="brand-title">
           <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
-          <div class="brand-logo" id="brandLogoIcon">
-            <i class="fa-solid fa-code"></i>
-          </div>
+          <div class="brand-logo"><i class="fa-solid fa-eye"></i></div>
           <div class="brand-info">
-            <div class="company-tag" id="companyTagText">
-              <span>Oakbit</span>
-              <span style="opacity:0.4;">|</span>
-              <span style="text-transform:none; font-weight:400; opacity:0.7;">formerly Ro&amp;Bot</span>
-            </div>
-            <h1 id="brandTitleText">
-              SamanthAI Studio             <span class="feature-badge" id="featureBadge">Code</span>
-            </h1>
+            <div class="company-tag"><span>Oakbit</span><span style="opacity:0.4;">|</span><span style="text-transform:none; font-weight:400; opacity:0.7;">formley Ro&Bot</span></div>
+            <h1>SamanthAI Studio <span class="feature-badge">Vision &amp; SD Gen</span></h1>
           </div>
-        </div>
-              
+        </div>              
         <div class="header-actions">
-          <button class="dynamic-tab-btn" id="openDynamicTabBtn" style="display:none;" title="Open Dynamic App Tab">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Dynamic Tab
-          </button>
-          <div class="status-badge" id="statusBadge">
-            <span class="pulse"></span>
-            <span id="statusText">Connecting...</span>
-          </div>
+          <button class="dynamic-tab-btn" id="openDynamicTabBtn" style="display:none;"><i class="fa-solid fa-wand-magic-sparkles"></i> Dynamic Tab</button>
+          <div class="status-badge" id="statusBadge"><span class="pulse"></span><span id="statusText">Connecting...</span></div>
         </div>
       </header>
 
       <div class="workspace-body">
         <main class="chat-container" id="chatContainer">
           <div class="empty-state" id="emptyState">
-            <div class="empty-icon" id="emptyIcon">
-              <i class="fa-solid fa-terminal"></i>
-            </div>
-            <h2 id="emptyTitle">SamanthAI Studio Code Workspace</h2>
-            <p id="emptyDesc">Ask for code generation, or request custom app tabs (like chess, cyber-terminals, or Greek marble themes) that transform the entire window interface!</p>
+            <div class="empty-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h2>Stable Diffusion Generator</h2>
+            <p>Upload images for AI Vision analysis or type instructions like "generate an image of a cyber city" to create images via Stable Diffusion!</p>
           </div>
         </main>
 
-        <!-- Dynamic Theme Redesigned Window Container (Injected by AI styling instructions) -->
-        <div id="dynamicWindowWrapper"></div>
-
-        <!-- Dynamic Tab Drawer (For playable apps / mini experiences) -->
         <div class="dynamic-tab-container" id="dynamicTabContainer">
           <div class="dynamic-tab-header">
-            <div class="dynamic-tab-title" id="dynamicTabTitle">
-              <i class="fa-solid fa-window-maximize"></i> Dynamic App Workspace
-            </div>
+            <div class="dynamic-tab-title"><i class="fa-solid fa-window-maximize"></i> Dynamic App Workspace</div>
             <button class="close-dynamic-btn" id="closeDynamicBtn">Close Tab</button>
           </div>
           <div class="dynamic-tab-content" id="dynamicTabContent"></div>
         </div>
       </div>
 
-      <footer class="input-dock-container" id="inputDockContainer">
-        <div class="input-dock" id="inputDock">
-          <textarea           id="userInput"           class="chat-textarea"           placeholder="Ask to write code or transform this window (e.g., 'Make this look like an ancient Greek tab')..."          rows="1"        ></textarea>
-          <button id="sendBtn" class="send-btn" title="Send Request">
-            <i class="fa-solid fa-arrow-up"></i>
-          </button>
+      <footer class="input-dock-container">
+        <div class="attachment-preview-bar" id="attachmentPreviewBar">
+          <img id="attachmentThumb" class="attachment-thumb" src="" alt="Attachment preview"/>
+          <span id="attachmentName" style="font-size:0.8rem; font-weight:600;">image.png</span>
+          <button class="remove-attachment" id="removeAttachmentBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="input-dock">
+          <input type="file" id="imageUploadInput" accept="image/*" style="display:none;" />
+          <button class="upload-btn" id="uploadBtn" title="Upload Image"><i class="fa-solid fa-image"></i></button>
+          <textarea id="userInput" class="chat-textarea" placeholder="Ask to generate an image using Stable Diffusion..." rows="1"></textarea>
+          <button id="sendBtn" class="send-btn" title="Send Request"><i class="fa-solid fa-arrow-up"></i></button>
         </div>
       </footer>
     </div>
@@ -178,7 +162,7 @@
 
   <script>    const BASE_URL = "https://openrouter.ai/api/v1";    const API_KEY = "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";
 
-    const MODELS = [      "poolside/laguna-s-2.1:free",      "openrouter/free",      "openai/gpt-oss-20b:free",      "nvidia/nemotron-3-nano-30b-a3b:free"    ];
+    const MODELS = [      "google/gemma-4-31b-it:free",      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",      "openrouter/free"    ];
 
     const chatContainer = document.getElementById('chatContainer');
     const userInput = document.getElementById('userInput');
@@ -191,46 +175,60 @@
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
 
-    const dynamicWindowWrapper = document.getElementById('dynamicWindowWrapper');
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const attachmentPreviewBar = document.getElementById('attachmentPreviewBar');
+    const attachmentThumb = document.getElementById('attachmentThumb');
+    const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
+
     const dynamicTabContainer = document.getElementById('dynamicTabContainer');
     const dynamicTabContent = document.getElementById('dynamicTabContent');
     const openDynamicTabBtn = document.getElementById('openDynamicTabBtn');
     const closeDynamicBtn = document.getElementById('closeDynamicBtn');
-    const appViewport = document.getElementById('appViewport');
 
-    let chats = JSON.parse(localStorage.getItem('oakbit_chats')) || [];
-    let currentChatId = localStorage.getItem('oakbit_current_chat') || null;
+    let chats = JSON.parse(localStorage.getItem('oakbit_sd_chats')) || [];
+    let currentChatId = localStorage.getItem('oakbit_sd_current') || null;
+    let pendingImageBase64 = null;
 
     let conversationHistory = [
-      {        role: "system",        content: "You are SamanthAI Studio Code, an advanced code assistant developed by Oakbit. When the user asks you to transform the interface theme or window layout (like 'Make this look like an ancient Greek themed tab', 'cyberpunk hacking window', or 'noir detective view'), output TWO things in your reply: 1) A ```styleblock ... ``` tag containing custom CSS rules to alter body/viewport colors, fonts, and accents, AND 2) A ```html ... ``` code block if they also requested an interactive app or game for the Dynamic Tab. Always provide warm conversational assistance as well."      }
+      { role: "system", content: "You are SamanthAI Studio powered by Stable Diffusion. You can analyze images via vision inputs. When users request an image generation or picture creation (e.g., 'generate a picture of...'), acknowledge their request and include a markdown image tag targeting the Stable Diffusion engine format: `https://image.pollinations.ai/prompt/[encoded_description]?width=1024&height=1024&nologo=true`. When asked to build apps, provide complete code styleblocks." }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
-      pingServerWithTimeout();
+      pingServer();
       initChatStorage();
     });
 
     menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    newChatBtn.addEventListener('click', () => {
-      createNewChat();
-      if (window.innerWidth <= 768) sidebar.classList.remove('open');
+    newChatBtn.addEventListener('click', () => { createNewChat(); if(window.innerWidth<=768) sidebar.classList.remove('open'); });
+    closeDynamicBtn.addEventListener('click', () => dynamicTabContainer.style.display = 'none');
+    openDynamicTabBtn.addEventListener('click', () => dynamicTabContainer.style.display = 'flex');
+
+    uploadBtn.addEventListener('click', () => imageUploadInput.click());
+    imageUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        pendingImageBase64 = event.target.result;
+        attachmentThumb.src = pendingImageBase64;
+        document.getElementById('attachmentName').textContent = file.name;
+        attachmentPreviewBar.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
     });
 
-    closeDynamicBtn.addEventListener('click', () => {
-      dynamicTabContainer.style.display = 'none';
-    });
-
-    openDynamicTabBtn.addEventListener('click', () => {
-      dynamicTabContainer.style.display = 'flex';
+    removeAttachmentBtn.addEventListener('click', () => {
+      pendingImageBase64 = null;
+      imageUploadInput.value = '';
+      attachmentPreviewBar.style.display = 'none';
     });
 
     function initChatStorage() {
       if (chats.length === 0) {
         createNewChat();
       } else {
-        if (!currentChatId || !chats.find(c => c.id == currentChatId)) {
-          currentChatId = chats[0].id;
-        }
+        if (!currentChatId || !chats.find(c => c.id == currentChatId)) currentChatId = chats[0].id;
         loadChat(currentChatId);
       }
       renderChatHistory();
@@ -240,30 +238,26 @@
       const newId = 'chat_' + Date.now();
       const newChatObj = {
         id: newId,
-        title: 'New Code Session',
+        title: 'Stable Diffusion Session',
         dynamicHtml: null,
         customStyle: null,
-        history: [
-          {        role: "system",        content: "You are SamanthAI Studio Code, an advanced code assistant developed by Oakbit. When the user asks you to transform the interface theme or window layout, output a ```styleblock ... ``` with CSS and/or a ```html ... ``` block for apps."      }
-        ]
+        history: [{ role: "system", content: "You are SamanthAI Studio Stable Diffusion Assistant." }]
       };
       chats.unshift(newChatObj);
       currentChatId = newId;
-      saveChatsToLocalStorage();
+      saveChats();
       loadChat(currentChatId);
       renderChatHistory();
     }
 
     function loadChat(id) {
       currentChatId = id;
-      localStorage.setItem('oakbit_current_chat', id);
+      localStorage.setItem('oakbit_sd_current', id);
       const chat = chats.find(c => c.id == id);
       if (!chat) return;
 
       conversationHistory = JSON.parse(JSON.stringify(chat.history));
       chatContainer.innerHTML = '';
-
-      // Apply saved custom theme style if any
       applyCustomStyle(chat.customStyle);
 
       if (chat.dynamicHtml) {
@@ -275,97 +269,60 @@
         dynamicTabContainer.style.display = 'none';
       }
 
-      const nonSystemMessages = conversationHistory.filter(m => m.role !== 'system');
-      if (nonSystemMessages.length === 0) {
+      const nonSys = conversationHistory.filter(m => m.role !== 'system');
+      if (nonSys.length === 0) {
         chatContainer.appendChild(emptyState);
       } else {
-        if (emptyState && emptyState.parentNode) emptyState.remove();
-        nonSystemMessages.forEach(msg => {
-          appendMessageDOM(msg.role, msg.content, false);
-        });
+        if (emptyState.parentNode) emptyState.remove();
+        nonSys.forEach(msg => appendMessageDOM(msg.role, msg.content, msg.imageUrl, false));
       }
       scrollToBottom();
       renderChatHistory();
     }
 
-    function applyCustomStyle(cssCode) {
-      let existingStyleTag = document.getElementById('dynamicCustomTheme');
-      if (existingStyleTag) existingStyleTag.remove();
-
-      if (cssCode) {
-        const styleTag = document.createElement('style');
-        styleTag.id = 'dynamicCustomTheme';
-        styleTag.textContent = cssCode;
-        document.head.appendChild(styleTag);
+    function applyCustomStyle(css) {
+      let tag = document.getElementById('dynamicCustomTheme');
+      if (tag) tag.remove();
+      if (css) {
+        tag = document.createElement('style');
+        tag.id = 'dynamicCustomTheme';
+        tag.textContent = css;
+        document.head.appendChild(tag);
       }
     }
 
-    function saveChatsToLocalStorage() {
-      localStorage.setItem('oakbit_chats', JSON.stringify(chats));
-    }
+    function saveChats() { localStorage.setItem('oakbit_sd_chats', JSON.stringify(chats)); }
 
     function renderChatHistory() {
       chatHistoryList.innerHTML = '';
       chats.forEach(chat => {
         const item = document.createElement('div');
         item.className = `history-item ${chat.id === currentChatId ? 'active' : ''}`;
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = chat.title;
-        titleSpan.style.flex = '1';
-        titleSpan.style.overflow = 'hidden';
-        titleSpan.style.textOverflow = 'ellipsis';
-        titleSpan.onclick = () => {
-          loadChat(chat.id);
-          if (window.innerWidth <= 768) sidebar.classList.remove('open');
-        };
-
-        const deleteBtn = document.createElement('i');
-        deleteBtn.className = 'fa-solid fa-trash delete-chat';
-        deleteBtn.onclick = (e) => {
-          e.stopPropagation();
-          deleteChat(chat.id);
-        };
-
-        item.appendChild(titleSpan);
-        item.appendChild(deleteBtn);
+        const span = document.createElement('span');
+        span.textContent = chat.title;
+        span.style.flex = '1'; span.style.overflow = 'hidden'; span.style.textOverflow = 'ellipsis';
+        span.onclick = () => { loadChat(chat.id); if(window.innerWidth<=768) sidebar.classList.remove('open'); };
+        const del = document.createElement('i');
+        del.className = 'fa-solid fa-trash delete-chat';
+        del.onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); };
+        item.appendChild(span); item.appendChild(del);
         chatHistoryList.appendChild(item);
       });
     }
 
     function deleteChat(id) {
       chats = chats.filter(c => c.id !== id);
-      if (chats.length === 0) {
-        createNewChat();
-      } else if (currentChatId === id) {
-        loadChat(chats[0].id);
-      }
-      saveChatsToLocalStorage();
-      renderChatHistory();
+      if (chats.length === 0) createNewChat();
+      else if (currentChatId === id) loadChat(chats[0].id);
+      saveChats(); renderChatHistory();
     }
 
-    async function pingServerWithTimeout() {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      try {
-        await fetch(`${BASE_URL}/key`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${API_KEY}` },
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        updateStatus(true, "Connected & Ready");
-        return true;
-      } catch (err) {
-        clearTimeout(timeoutId);
-        updateStatus(true, "Ready");
-        return true;
-      }
+    async function pingServer() {
+      updateStatus(true, "Stable Diffusion Active");
     }
 
-    function updateStatus(isOnline, text) {
-      statusBadge.className = 'status-badge ' + (isOnline ? 'online' : 'error');
+    function updateStatus(online, text) {
+      statusBadge.className = 'status-badge ' + (online ? 'online' : 'error');
       statusText.textContent = text;
     }
 
@@ -373,152 +330,150 @@
       userInput.style.height = 'auto';
       userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
     });
-
     userInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSendMessage();
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
     });
+    sendBtn.addEventListener('click', handleSend);
 
-    sendBtn.addEventListener('click', handleSendMessage);
-
-    async function handleSendMessage() {
+    async function handleSend() {
       const text = userInput.value.trim();
-      if (!text) return;
+      const currentImg = pendingImageBase64;
+      if (!text && !currentImg) return;
 
-      if (emptyState && emptyState.parentNode) emptyState.remove();
+      if (emptyState.parentNode) emptyState.remove();
 
-      appendMessage('user', text);
-      conversationHistory.push({ role: 'user', content: text });
-            
+      let userContentPayload = text;
+      if (currentImg) {
+        userContentPayload = [
+          { type: "text", text: text || "Analyze this image layout." },
+          { type: "image_url", image_url: { url: currentImg } }
+        ];
+      }
+
+      appendMessage('user', text, currentImg);
+      conversationHistory.push({ role: 'user', content: userContentPayload });
+
       const activeChat = chats.find(c => c.id === currentChatId);
-      if (activeChat && activeChat.title === 'New Code Session') {
+      if (activeChat.title === 'Stable Diffusion Session' && text) {
         activeChat.title = text.length > 25 ? text.substring(0, 25) + '...' : text;
       }
-      activeChat.history = JSON.parse(JSON.stringify(conversationHistory));
-      saveChatsToLocalStorage();
-      renderChatHistory();
 
       userInput.value = '';
       userInput.style.height = '24px';
+      pendingImageBase64 = null;
+      imageUploadInput.value = '';
+      attachmentPreviewBar.style.display = 'none';
       sendBtn.disabled = true;
 
-      const typingElem = createTypingIndicator();
-      chatContainer.appendChild(typingElem);
+      const typing = createTypingIndicator();
+      chatContainer.appendChild(typing);
       scrollToBottom();
 
-      let responseSuccess = false;
-      let lastErrorMessage = "";
+      let success = false;
+      let lastErr = "";
 
       for (let i = 0; i < MODELS.length; i++) {
-        const currentModel = MODELS[i];
-        statusText.textContent = `Routing (${i + 1}/${MODELS.length})...`;
-
         try {
-          const response = await fetch(`${BASE_URL}/chat/completions`, {
+          const res = await fetch(`${BASE_URL}/chat/completions`, {
             method: "POST",
-            headers: {
-              "Authorization": `Bearer ${API_KEY}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              model: currentModel,
-              messages: conversationHistory
-            })
+            headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ model: MODELS[i], messages: conversationHistory })
           });
+          const data = await res.json();
 
-          const data = await response.json();
+          if (res.ok && data.choices && data.choices[0]?.message?.content) {
+            let reply = data.choices[0].message.content;
 
-          if (response.ok && !data.error && data.choices && data.choices[0]?.message?.content) {
-            const assistantReply = data.choices[0].message.content;
-            typingElem.remove();
-            appendMessage('assistant', assistantReply);
-            conversationHistory.push({ role: 'assistant', content: assistantReply });
-                        
-            // Check if assistant provided style adjustments to redesign the window itself
-            const styleMatch = assistantReply.match(/```styleblock([\s\S]*?)```/i);
-            if (styleMatch && styleMatch[1]) {
-              const customCss = styleMatch[1].trim();
-              activeChat.customStyle = customCss;
-              applyCustomStyle(customCss);
+            // Trigger Stable Diffusion engine render link when text indicates generation intent
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes('generate') || lowerText.includes('create') || lowerText.includes('draw') || lowerText.includes('image') || lowerText.includes('picture')) {
+              const promptEncoded = encodeURIComponent(text);
+              reply += `\n\n![Stable Diffusion Output](https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true)`;
             }
 
-            // Check if assistant provided an executable html block for Dynamic Tab apps
-            const htmlMatch = assistantReply.match(/```html([\s\S]*?)```/i);
-            if (htmlMatch && htmlMatch[1]) {
-              const codeContent = htmlMatch[1].trim();
-              activeChat.dynamicHtml = codeContent;
-              dynamicTabContent.innerHTML = codeContent;
+            typing.remove();
+            appendMessage('assistant', reply);
+            conversationHistory.push({ role: 'assistant', content: reply });
+
+            const styleMatch = reply.match(/```styleblock([\s\S]*?)```/i);
+            if (styleMatch) { activeChat.customStyle = styleMatch[1].trim(); applyCustomStyle(activeChat.customStyle); }
+
+            const htmlMatch = reply.match(/```html([\s\S]*?)```/i);
+            if (htmlMatch) {
+              activeChat.dynamicHtml = htmlMatch[1].trim();
+              dynamicTabContent.innerHTML = activeChat.dynamicHtml;
               openDynamicTabBtn.style.display = 'flex';
               dynamicTabContainer.style.display = 'flex';
-              
-              const scripts = dynamicTabContent.querySelectorAll('script');
-              scripts.forEach(script => {
-                const newScript = document.createElement('script');
-                newScript.text = script.innerHTML;
-                script.parentNode.replaceChild(newScript, script);
-              });
             }
 
             activeChat.history = JSON.parse(JSON.stringify(conversationHistory));
-            saveChatsToLocalStorage();
-
-            responseSuccess = true;
-            updateStatus(true, "Connected & Ready");
+            saveChats();
+            success = true;
             break;
           } else {
-            lastErrorMessage = data.error?.message || `HTTP ${response.status}`;
+            lastErr = data.error?.message || `HTTP ${res.status}`;
           }
         } catch (err) {
-          lastErrorMessage = err.message;
+          lastErr = err.message;
         }
       }
 
-      if (!responseSuccess) {
-        typingElem.remove();
-        appendMessage('assistant', `⚠️ All fallbacks failed: ${lastErrorMessage}`);
-        updateStatus(false, "Service Error");
+      if (!success) {
+        typing.remove();
+        appendMessage('assistant', `⚠️ Stable Diffusion connection error: ${lastErr}`);
       }
 
       sendBtn.disabled = false;
       scrollToBottom();
+      renderChatHistory();
     }
 
-    function appendMessage(sender, text) {
-      appendMessageDOM(sender, text, true);
+    function appendMessage(sender, text, imgUrl = null) {
+      appendMessageDOM(sender, text, imgUrl, true);
     }
 
-    function appendMessageDOM(sender, text, animate = true) {
-      const msgDiv = document.createElement('div');
-      msgDiv.classList.add('message', sender);
-      if (!animate) msgDiv.style.animation = 'none';
+    function appendMessageDOM(sender, text, imgUrl, animate) {
+      const div = document.createElement('div');
+      div.className = `message ${sender}`;
+      if (!animate) div.style.animation = 'none';
 
-      const senderTag = document.createElement('div');
-      senderTag.classList.add('sender-tag');
-      senderTag.textContent = sender === 'user' ? 'Developer' : 'SamanthAI Studio';
+      const tag = document.createElement('div');
+      tag.className = 'sender-tag';
+      tag.textContent = sender === 'user' ? 'Developer' : 'Stable Diffusion AI';
 
-      const bodyDiv = document.createElement('div');
-      bodyDiv.classList.add('message-body');
+      const body = document.createElement('div');
+      body.className = 'message-body';
 
-      if (sender === 'assistant' && typeof marked !== 'undefined') {
-        bodyDiv.innerHTML = marked.parse(text);
-      } else {
-        bodyDiv.textContent = text;
+      if (imgUrl) {
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.className = 'message-img-preview';
+        body.appendChild(img);
       }
 
-      msgDiv.appendChild(senderTag);
-      msgDiv.appendChild(bodyDiv);
-      chatContainer.appendChild(msgDiv);
+      let parsedText = text;
+      if (typeof text === 'object' && text !== null) {
+        parsedText = text.find(item => item.type === 'text')?.text || "";
+      }
+
+      if (sender === 'assistant' && typeof marked !== 'undefined') {
+        body.innerHTML += marked.parse(parsedText);
+      } else {
+        const p = document.createElement('p');
+        p.textContent = parsedText;
+        body.appendChild(p);
+      }
+
+      div.appendChild(tag);
+      div.appendChild(body);
+      chatContainer.appendChild(div);
     }
 
     function createTypingIndicator() {
-      const indicator = document.createElement('div');
-      indicator.classList.add('typing-indicator');
-      indicator.innerHTML = `        <div class="typing-dot"></div>        <div class="typing-dot"></div>        <div class="typing-dot"></div>      `;
-      return indicator;
+      const ind = document.createElement('div');
+      ind.className = 'typing-indicator';
+      ind.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+      return ind;
     }
 
-    function scrollToBottom() {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }  </script></body></html>
+    function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }  </script></body></html>
