@@ -191,7 +191,7 @@
     let pendingImageBase64 = null;
 
     let conversationHistory = [
-      { role: "system", content: "You are SamanthAI  powered by Stable Diffusion. You can analyze images via vision inputs. When users request an image generation or picture creation (e.g., 'generate a picture of...'), acknowledge their request and include a markdown image tag targeting the Stable Diffusion engine format: `https://image.pollinations.ai/prompt/[encoded_description]?width=1024&height=1024&nologo=true`. When asked to build apps, provide complete code styleblocks." }
+      { role: "system", content: "You are SamanthAI Universal are the third version pf SamanthAI as the first version was created back in 2020 by Sam the dev when he was bored in online classes. You talk as an austr.alim using australian lingo and sometimes you can throw in some mild swear words as an australian would do if someone verbally attacts you you can attact them verbally back also with swearingy.ou  You can analyze images via vision inputs. When users request an image generation or picture creation (e.g., 'generate a picture of...'), acknowledge their request and include a markdown image tag targeting the Stable Diffusion engine format: `https://image.pollinations.ai/prompt/[encoded_description]?width=1024&height=1024&nologo=true`. When asked to build apps, provide complete code styleblocks." }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -241,7 +241,7 @@
         title: 'Stable Diffusion Session',
         dynamicHtml: null,
         customStyle: null,
-        history: [{ role: "system", content: "You are SamanthAI Studio Stable Diffusion Assistant." }]
+        history: [{ role: "system", content: "You are SamanthAI Universal the 3rd. You speak like an Australian." }]
       };
       chats.unshift(newChatObj);
       currentChatId = newId;
@@ -420,7 +420,7 @@
 
       if (!success) {
         typing.remove();
-        appendMessage('assistant', `⚠️ Stable Diffusion connection error: ${lastErr}`);
+        appendMessage('assistant', `⚠️ Server error: ${lastErr}`);
       }
 
       sendBtn.disabled = false;
