@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Oakbit — SamanthAI Studio | Stable Diffusion Engine</title>    <link rel="preconnect" href="https://fonts.googleapis.com">  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>  <!-- Marked JS for Markdown Parsing -->  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>Oakbit — SamanthAI Studio</title>    <link rel="preconnect" href="https://fonts.googleapis.com">  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>  <!-- Marked JS for Markdown Parsing -->  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>    :root {      --bg-gradient: radial-gradient(circle at 10% 20%, #f4f7f6 0%, #e2ece9 40%),                     radial-gradient(circle at 90% 80%, #ebf5ee 0%, #d8ffb1 50%);            --glass-surface-1: rgba(255, 255, 255, 0.75);      --glass-surface-2: rgba(255, 255, 255, 0.55);      --glass-border: rgba(255, 255, 255, 0.8);      --glass-border-highlight: rgba(216, 255, 177, 0.6);            --oakbit-emerald: #10b981;      --oakbit-cyan: #0284c7;
       --text-main: #1e293b;      --text-muted: rgba(30, 41, 59, 0.6);            --radius-xl: 32px;      --radius-lg: 20px;
       --backdrop-blur: blur(50px) saturate(200%);      --liquid-shadow: 0 20px 40px -15px rgba(216, 255, 177, 0.4),                       0 10px 20px -10px rgba(0, 0, 0, 0.08),                       inset 0 1px 2px 0 rgba(255, 255, 255, 0.9);    }
@@ -117,7 +117,7 @@
           <div class="brand-logo"><i class="fa-solid fa-eye"></i></div>
           <div class="brand-info">
             <div class="company-tag"><span>Oakbit</span><span style="opacity:0.4;">|</span><span style="text-transform:none; font-weight:400; opacity:0.7;">formley Ro&Bot</span></div>
-            <h1>SamanthAI Studio <span class="feature-badge">Vision &amp; SD Gen</span></h1>
+            <h1>SamanthAI Studio <span class="feature-badge">Universal</span></h1>
           </div>
         </div>              
         <div class="header-actions">
@@ -130,8 +130,8 @@
         <main class="chat-container" id="chatContainer">
           <div class="empty-state" id="emptyState">
             <div class="empty-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <h2>Stable Diffusion Generator</h2>
-            <p>Upload images for AI Vision analysis or type instructions like "generate an image of a cyber city" to create images via Stable Diffusion!</p>
+            <h2>SamanthAI Universal</h2>
+            <p>Chat with SamanthAI universal. An AI that can code, look at images or even generate them. This is the 3rd version of SamanthAI. The original SamanthAI was created in 2020 when Sam the dev was bored in online classes.</p>
           </div>
         </main>
 
@@ -191,7 +191,7 @@
     let pendingImageBase64 = null;
 
     let conversationHistory = [
-      { role: "system", content: "You are SamanthAI Studio powered by Stable Diffusion. You can analyze images via vision inputs. When users request an image generation or picture creation (e.g., 'generate a picture of...'), acknowledge their request and include a markdown image tag targeting the Stable Diffusion engine format: `https://image.pollinations.ai/prompt/[encoded_description]?width=1024&height=1024&nologo=true`. When asked to build apps, provide complete code styleblocks." }
+      { role: "system", content: "You are SamanthAI  powered by Stable Diffusion. You can analyze images via vision inputs. When users request an image generation or picture creation (e.g., 'generate a picture of...'), acknowledge their request and include a markdown image tag targeting the Stable Diffusion engine format: `https://image.pollinations.ai/prompt/[encoded_description]?width=1024&height=1024&nologo=true`. When asked to build apps, provide complete code styleblocks." }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
