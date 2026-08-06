@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Potato TV</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #0b0c10;
+    color: #eaeaea;
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100%;
+  }
+  #top {
+    padding: 10px;
+    background: #15171c;
+    border-bottom: 2px solid #2a2d34;
+    display: block;
+  }
+  #top select, #top input {
+    font-size: 20px;
+    padding: 8px;
+    margin-right: 10px;
+    background: #1f2128;
+    color: #eaeaea;
+    border: 2px solid #3a3d46;
+  }
+  #status {
+    font-size: 16px;
+    color: #9aa0a6;
+    margin-top: 6px;
+  }
+  #videoWrap {
+    width: 100%;
+    background: #000;
+  }
+  video {
+    width: 100%;
+    max-height: 55vh;
+    background: #000;
+    display: block;
+  }
+  #channels {
+    padding: 10px;
+    display: block;
+  }
+  .ch {
+    display: inline-block;
+    width: 100%;
+    max-width: 480px;
+    margin: 4px 0;
+    padding: 12px 14px;
+    background: #1a1c22;
+    border: 2px solid #2f323b;
+    color: #eaeaea;
+    font-size: 20px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .ch img {
+    height: 28px;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .ch:focus, .ch:hover {
+    outline: none;
+    border-color: #4da3ff;
+    background: #22262f;
+  }
+  .ch.playing {
+    border-color: #4dff88;
+  }
+  #msg {
+    padding: 10px;
+    color: #ff8a8a;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="top">
+  <select id="countrySelect">
+    <option value="">Loading countries...</option>
+  </select>
+  <div id="status"></div>
+</div>
+
+<div id="videoWrap">
+  <video id="video" controls autoplay playsinline></video>
+</div>
+
+<div id="msg"></div>
+<div id="channels"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var video = document.getElementById("video");
+  var countrySelect = document.getElementById("countrySelect");
+  var channelsDiv = document.getElementById("channels");
+  var statusDiv = document.getElementById("status");
+  var msgDiv = document.getElementById("msg");
+  var hls = null;
+
+  function setStatus(text) {
+    statusDiv.textContent = text || "";
+  }
+
+  function setMsg(text) {
+    msgDiv.textContent = text || "";
+  }
+
+  // ---- Load country list ----
+  function loadCountries() {
+    setStatus("Loading country list...");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://iptv-org.github.io/api/countries.json", true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            fillCountries(data);
+          } catch (e) {
+            setStatus("Could not read country list.");
+          }
+        } else {
+          setStatus("Could not load country list (check internet connection).");
+        }
+      }
+    };
+    xhr.send();
+  }
+
+  function fillCountries(list) {
+    list.sort(function (a, b) {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    countrySelect.innerHTML = "";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "-- Select a country --";
+    countrySelect.appendChild(placeholder);
+
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      if (!c.code || !c.name) continue;
+      var opt = document.createElement("option");
+      opt.value = c.code.toLowerCase();
+      opt.textContent = c.name;
+      countrySelect.appendChild(opt);
+    }
+    setStatus("Pick a country to load its channels.");
+  }
+
+  // ---- Load channels for a country ----
+  function loadChannels(code) {
+    channelsDiv.innerHTML = "";
+    setMsg("");
+    if (!code) return;
+    setStatus("Loading channels...");
+
+    var url = "https://iptv-org.github.io/iptv/countries/" + code + ".m3u";
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          var list = parseM3U(xhr.responseText);
+          if (list.length === 0) {
+            setStatus("No channels found for this country.");
+          } else {
+            setStatus(list.length + " channel(s) found. Tap one to play.");
+            renderChannels(list);
+          }
+        } else {
+          setStatus("Could not load channels for this country.");
+        }
+      }
+    };
+    xhr.send();
+  }
+
+  function parseM3U(text) {
+    var lines = text.split(/\r?\n/);
+    var list = [];
+    var current = null;
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (!line) continue;
+
+      if (line.indexOf("#EXTINF") === 0) {
+        var logoMatch = line.match(/tvg-logo="([^"]*)"/);
+        var groupMatch = line.match(/group-title="([^"]*)"/);
+        var nameMatch = line.match(/,(.*)$/);
+        current = {
+          name: nameMatch ? nameMatch[1].trim() : "Unknown channel",
+          logo: logoMatch ? logoMatch[1] : "",
+          group: groupMatch ? groupMatch[1] : ""
+        };
+      } else if (line.indexOf("#") !== 0) {
+        if (current) {
+          current.url = line.trim();
+          list.push(current);
+          current = null;
+        }
+      }
+    }
+    return list;
+  }
+
+  function renderChannels(list) {
+    channelsDiv.innerHTML = "";
+    for (var i = 0; i < list.length; i++) {
+      (function (ch) {
+        var btn = document.createElement("button");
+        btn.className = "ch";
+        btn.setAttribute("tabindex", "0");
+
+        if (ch.logo) {
+          var img = document.createElement("img");
+          img.src = ch.logo;
+          img.onerror = function () { img.style.display = "none"; };
+          btn.appendChild(img);
+        }
+        var label = document.createElement("span");
+        label.textContent = ch.name;
+        btn.appendChild(label);
+
+        btn.onclick = function () {
+          playChannel(ch.url, btn);
+        };
+        channelsDiv.appendChild(btn);
+      })(list[i]);
+    }
+  }
+
+  // ---- Playback ----
+  function playChannel(url, btnEl) {
+    setMsg("");
+    setStatus("Loading stream...");
+
+    var allButtons = channelsDiv.getElementsByClassName("ch");
+    for (var i = 0; i < allButtons.length; i++) {
+      allButtons[i].className = "ch";
+    }
+    if (btnEl) btnEl.className = "ch playing";
+
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+    video.removeAttribute("src");
+    video.load();
+
+    if (window.Hls && window.Hls.isSupported()) {
+      hls = new window.Hls({ maxBufferLength: 15 });
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(window.Hls.Events.MANIFEST_PARSED, function () {
+        video.play();
+        setStatus("Playing.");
+      });
+      hls.on(window.Hls.Events.ERROR, function (event, data) {
+        if (data && data.fatal) {
+          setMsg("This stream failed to load. Try another channel.");
+          setStatus("");
+        }
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Native HLS support (Safari, some smart TV browsers)
+      video.src = url;
+      video.addEventListener("loadedmetadata", function () {
+        video.play();
+        setStatus("Playing.");
+      }, { once: true });
+      video.addEventListener("error", function () {
+        setMsg("This stream failed to load. Try another channel.");
+        setStatus("");
+      }, { once: true });
+    } else {
+      setMsg("This browser cannot play HLS streams.");
+      setStatus("");
+    }
+  }
+
+  countrySelect.onchange = function () {
+    loadChannels(countrySelect.value);
+  };
+
+  loadCountries();
+})();
+</script>
+
+</body>
+    </html>
+    
